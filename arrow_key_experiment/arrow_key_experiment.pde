@@ -1,19 +1,25 @@
-
-int y = 0;
+int x = 50;
+int y = 50;
 
 void setup(){
-  background(200,200);
 }
 
 void draw() {
+  background(200,200);
   ellipseMode(CENTER);
-  ellipse(0,y,5,5);
-  
- 
+  ellipse(x,y,5,5);
 }
-  void keyPressed(){
+
+void keyPressed(){
   if (key == CODED){
     if (keyCode == DOWN){
-      y += 5;}
+      y += 5;
+    }else if (keyCode == UP){
+      y -= 5;
+    }else if (keyCode == RIGHT){
+      x += 5;
+    }else if (keyCode == LEFT){
+      x -= 5;
+    }
   }
-  }
+}
