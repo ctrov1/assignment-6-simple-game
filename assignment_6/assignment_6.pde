@@ -28,12 +28,14 @@ PSUEDOCODE -- Rip-off Galaga
 
 -----------------------------------------------------------------------------------------------*/
 
-
 int numBalls = 12;
 float spring = 0.05;
 float gravity = 0.03;
 float friction = -0.9;
 Ball[] balls = new Ball[numBalls];
+
+int playerx = 320;
+int playery = 180;
 
 void setup() {
   size(640, 360);
@@ -51,6 +53,7 @@ void draw() {
     ball.move();
     ball.display();  
   }
+  ellipse(playerx,playery,5,5);
 }
 
 class Ball {
@@ -114,5 +117,33 @@ class Ball {
   
   void display() {
     ellipse(x, y, diameter, diameter);
+  }
+}
+
+void keyPressed(){
+  if (key == CODED){
+    if (keyCode == DOWN){
+      playery += 5;
+    }else if (keyCode == UP){
+      playery -= 5;
+    }else if (keyCode == RIGHT){
+      playerx += 5;
+    }else if (keyCode == LEFT){
+      playerx -= 5;
+    }
+    
+   if (keyCode == DOWN && keyCode == RIGHT){
+      playery += 5;
+      playerx += 5;
+    }else if (keyCode == DOWN && keyCode == LEFT){
+      playery += 5;
+      playerx -= 5;
+    }else if (keyCode == UP && keyCode == RIGHT){
+      playery -= 5;
+      playerx += 5;
+    }else if (keyCode == UP && keyCode == LEFT){
+      playery -= 5;
+      playerx -= 5;
+    }
   }
 }
