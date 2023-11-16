@@ -26,11 +26,18 @@ PSUEDOCODE -- Rip-off Galaga
 11. Short, quickly decaying smoke trail on jetpack
 12. Animated background
 
+
+NEW PSUEDOCODE -- Rip-off Pac-Man
+1. Obstacle-based game, touching balls kills player
+2. Coins scattered around randomly with for statement
+3. Collecting coins contributes to score
+4. Collecting all coins adds +500 score and resets screen for new level
+
 -----------------------------------------------------------------------------------------------*/
 
 int numBalls = 12;
 float spring = 0.05;
-float gravity = 0.03;
+float gravity = 0.0;
 float friction = -0.9;
 Ball[] balls = new Ball[numBalls];
 
