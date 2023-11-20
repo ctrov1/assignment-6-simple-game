@@ -1,9 +1,11 @@
 float Charx = 50;
 float Chary = 50;
-Coin[] coins = new Coin[10];
+int coinNum = 10;
+int Score = 0;
+Coin[] coins = new Coin[coinNum];
 void setup(){
   size(500,500);
-  for (int i = 0; i < coins.length; i++) {
+  for (int i = 0; i < coinNum; i++) {
    coins[i] = new Coin(color(#ffeb16),random(width),random(height));
 }
 }
@@ -11,7 +13,7 @@ void setup(){
 void draw() {
   background(200,200);
   
-  for (int i = 0; i < coins.length; i++) {
+  for (int i = 0; i < coinNum; i++) {
   coins[i].displaycoin();
   coins[i].destroycoin();
   }
@@ -39,13 +41,16 @@ class Coin {
    ellipse(cxpos,cypos,10,10);
    }
    void destroycoin(){
-     if (cxpos>Charx-10 && cxpos<Charx+10 && cypos>Chary-10 && cypos<Chary+10){
-       noStroke();
-       fill(200);
-       ellipse(cxpos,cypos,10,10);
-       println("it works");
-       
+     float coindistance = sqrt((cxpos-Charx) * (cxpos-Charx) + (cypos-Chary) * (cypos-Chary));
+     if (coindistance <=10){
+       cxpos=-1000;
+       cypos=-1000;
+      
+       Score++;
+       println(Score);
      }
+      
+    
     stroke(1);     
 }
 

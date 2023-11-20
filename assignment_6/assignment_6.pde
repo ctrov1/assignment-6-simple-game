@@ -47,7 +47,12 @@ int player1y = height/2;
 int player2x = width/4;
 int player2y = height/4;
 int playerd = 5;
+float moveSpeed = 10;
 
+//Coin Variables
+int coinNum = 10;
+int Score = 0;
+Coin[] coins = new Coin[coinNum];
 void setup() {
   
   size(1280, 720);
@@ -55,12 +60,21 @@ void setup() {
   for (int i = 0; i < numBalls; i++) {
     balls[i] = new Ball(random(width), random(height), random(40, 50), i, balls);
   }
+  //Populates Coin Array
+  for (int i = 0; i < coinNum; i++) {
+   coins[i] = new Coin(color(#ffeb16),random(width),random(height));
+}
   
 }
 
 void draw() {
   
   background(0);
+  //Draw and Remove Coins
+  for (int i = 0; i < coinNum; i++) {
+  coins[i].displaycoin();
+  coins[i].destroycoin();
+  }
   
   //  Bouncy balls setup
   for (Ball ball : balls) {
@@ -90,7 +104,36 @@ void draw() {
   text(second(), width/16, height/12);
   
 }
-
+// Coin Class and Functions
+class Coin {
+  color c;
+  float cxpos;
+  float cypos;
+  
+  
+  Coin(color c_, float cxpos_, float cypos_) {
+   c = c_;
+   cxpos = cxpos_;
+   cypos = cypos_;
+  }
+  
+   void displaycoin() {
+   fill(c);
+   noStroke();
+   ellipse(cxpos,cypos,10,10);
+   }
+   void destroycoin(){
+     float coindistance = sqrt((cxpos-player1x) * (cxpos-player1x) + (cypos-player1y) * (cypos-player1y));
+     if (coindistance <=10){
+       cxpos=-1000;
+       cypos=-1000;
+      
+       Score++;
+       println(Score);
+     }
+   }
+}
+     
 class Ball {
   
   float x, y;
@@ -182,13 +225,13 @@ void keyPressed(){
   //  Player 1 movement
   if (key == CODED){
     if (keyCode == DOWN){
-      player1y += 5;
+      player1y += moveSpeed;
     }else if (keyCode == UP){
-      player1y -= 5;
+      player1y -= moveSpeed;
     }else if (keyCode == RIGHT){
-      player1x += 5;
+      player1x += moveSpeed;
     }else if (keyCode == LEFT){
-      player1x -= 5;
+      player1x -= moveSpeed;
     }
   }
   
