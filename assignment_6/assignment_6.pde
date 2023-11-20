@@ -58,16 +58,9 @@ void setup() {
   
 }
 
-int time = second();
-
 void draw() {
   
   background(0);
-  //  Timer
-  fill(255);
-  textSize(width/50);
-  text("TIME", width/24, height/18);
-  text(second(), width/18, height/12);
   
   //  Bouncy balls setup
   for (Ball ball : balls) {
@@ -87,6 +80,14 @@ void draw() {
     p2.collide();
     p2.player2();
   }*/
+  
+  //  Timer
+  fill(255);
+  textSize(width/50);
+  text("TIME", width/24, height/18);
+  text(":", width/17, height/12);
+  text(minute(), width/24, height/12);
+  text(second(), width/16, height/12);
   
 }
 
