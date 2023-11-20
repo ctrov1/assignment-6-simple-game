@@ -1,4 +1,6 @@
-/**
+/*-----------------------------------------------------------------------------------------------
+
+ *
  * Bouncy Bubbles  
  * based on code from Keith Peters. 
  * 
@@ -6,10 +8,9 @@
  * Taken from https://processing.org/examples/bouncybubbles.html
  * 
  * Written by Charlie Trovini & Sam Kaplan
- */
+ *
 
-
-/*-----------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
 
 NEW PSUEDOCODE -- Rip-off Pac-Man  -- CURRENT
 
@@ -35,41 +36,57 @@ PSUEDOCODE -- Rip-off Galaga  -- SCRAPPED
 
 -----------------------------------------------------------------------------------------------*/
 
-int numBalls = 12;
-float spring = 0.075;
+int numBalls = 18;
+float spring = 0.25;
 float gravity = 0.0;
 float friction = -0.9;
 Ball[] balls = new Ball[numBalls];
 
-int playerx = 0;
-int playery = height/2;
+int player1x = width/2;
+int player1y = height/2;
+int player2x = width/4;
+int player2y = height/4;
 int playerd = 5;
 
 void setup() {
   
-  size(640, 360);
+  size(1280, 720);
   noStroke();
-  fill(255, 204);
   for (int i = 0; i < numBalls; i++) {
-    balls[i] = new Ball(random(width), random(height), random(30, 60), i, balls);
+    balls[i] = new Ball(random(width), random(height), random(40, 50), i, balls);
   }
   
 }
 
-void player() {
-  ellipse(playerx,playery,playerd,playerd);
-}
+int time = second();
 
 void draw() {
   
   background(0);
-  player();
+  //  Timer
+  fill(255);
+  textSize(width/50);
+  text("TIME", width/24, height/18);
+  text(second(), width/18, height/12);
+  
+  //  Bouncy balls setup
   for (Ball ball : balls) {
     ball.collide();
     ball.move();
     ball.display();
   }
   
+  //  Player 1 setup
+  for (Ball p1 : balls) {
+    p1.collide();
+    p1.player1();
+  }
+  
+  /*  Player 2 setup
+  for (Ball p2 : balls) {
+    p2.collide();
+    p2.player2();
+  }*/
   
 }
 
@@ -106,11 +123,16 @@ class Ball {
         vy -= ay;
         others[i].vx += ax;
         others[i].vy += ay;
-      }/*if (dist(playerx,playery,x,y)==diameter){
-    fill(255,0,0);
-  }else
-  fill(255,255,255);*/
-    }   
+      }
+      //  Player 1 collision
+      if (dist(player1x, player1y, x, y) < diameter-25){
+        setup();
+      }
+      /*  Player 2 collision
+      if (dist(player2x, player2y, x, y) < diameter-25){
+        setup();
+      }*/
+    }
   }
   
   void move() {
@@ -136,42 +158,48 @@ class Ball {
   }
   
   void display() {
+    fill(255, 100, 100, 240);
     ellipse(x, y, diameter, diameter);
   }
   
-  /*void player(float playerw, float playerh) {
-    ellipse(playerx,playery,playerw,playerh);
+  //  Player 1 draw
+  void player1() {
+    fill(100, 255, 100);
+    ellipse(player1x, player1y, playerd, playerd);
   }
-  */
+  
+  /*  Player 2 draw
+  void player2() {
+    fill(100, 100, 255);
+    ellipse(player2x, player2y, playerd, playerd);
+  }*/
+  
 }
 
 void keyPressed(){
   
+  //  Player 1 movement
   if (key == CODED){
     if (keyCode == DOWN){
-      playery += 5;
+      player1y += 5;
     }else if (keyCode == UP){
-      playery -= 5;
+      player1y -= 5;
     }else if (keyCode == RIGHT){
-      playerx += 5;
+      player1x += 5;
     }else if (keyCode == LEFT){
-      playerx -= 5;
+      player1x -= 5;
     }
   }
   
-   /*  Diagonal movement (non-functional)
-   if (keyCode == DOWN && keyCode == RIGHT){
-      playery += 5;
-      playerx += 5;
-    }else if (keyCode == DOWN && keyCode == LEFT){
-      playery += 5;
-      playerx -= 5;
-    }else if (keyCode == UP && keyCode == RIGHT){
-      playery -= 5;
-      playerx += 5;
-    }else if (keyCode == UP && keyCode == LEFT){
-      playery -= 5;
-      playerx -= 5;
-    }*/
+  /*  Player 2 movement
+  if (key == 's' || key == 'S'){
+    player2y += 5;
+  }else if (key == 'w' || key == 'W'){
+    player2y -= 5;
+  }else if (key == 'd' || key == 'D'){
+    player2x += 5;
+  }else if (key == 'a' || key == 'A'){
+    player2x -= 5;
+  }*/
   
 }
