@@ -53,6 +53,7 @@ float moveSpeed = 10;
 int coinNum = 10;
 int Score = 0;
 Coin[] coins = new Coin[coinNum];
+
 void setup() {
   
   size(1280, 720);
@@ -95,15 +96,22 @@ void draw() {
     p2.player2();
   }*/
   
-  //  Timer
+  //  Text setup
   fill(255);
   textSize(width/50);
+  
+  //  Timer
   text("TIME", width/24, height/18);
   text(":", width/17, height/12);
   text(minute(), width/24, height/12);
   text(second(), width/16, height/12);
   
+  //  Score
+  text("SCORE", width*0.9, height/18);
+  text(Score, width*0.9, height/12);
+  
 }
+
 // Coin Class and Functions
 class Coin {
   color c;
