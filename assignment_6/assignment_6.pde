@@ -1,4 +1,4 @@
-/*-----------------------------------------------------------------------------------------------
+/*---------------------------------------------------------------------------------------------------------------------
 
  *
  * Bouncy Bubbles  
@@ -10,7 +10,7 @@
  * Written by Charlie Trovini & Sam Kaplan
  *
 
--------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
 
 NEW PSUEDOCODE -- Rip-off Pac-Man  -- CURRENT
 
@@ -18,6 +18,8 @@ NEW PSUEDOCODE -- Rip-off Pac-Man  -- CURRENT
 2. Coins scattered around randomly with for statement
 3. Collecting coins contributes to score
 4. Collecting all coins adds +500 score and resets screen for new level
+5. Power-up to increase movement speed
+6. Title screen
 
 PSUEDOCODE -- Rip-off Galaga  -- SCRAPPED
 
@@ -34,69 +36,120 @@ PSUEDOCODE -- Rip-off Galaga  -- SCRAPPED
 11. Short, quickly decaying smoke trail on jetpack
 12. Animated background
 
------------------------------------------------------------------------------------------------*/
+---------------------------------------------------------------------------------------------------------------------*/
+
+//  INITIALIZE
 
 int numBalls = 18;
-float spring = 0.25;
+float spring = 0.75;
 float gravity = 0.0;
 float friction = -0.9;
 Ball[] balls = new Ball[numBalls];
 
-int player1x = width/2;
-int player1y = height/2;
-int player2x = width/4;
-int player2y = height/4;
-int playerd = 5;
 float moveSpeed = 10;
 
-//Coin Variables
-int coinNum = 10;
-int Score = 0;
+//  Coin Variables
+int coinNum = 9;
+int ScoreMath = 1;
+int ScoreDisplay = 0;
 Coin[] coins = new Coin[coinNum];
+
+//  Player intergers
+int player1x;
+int player1y;
+int player2x;
+int player2y;
+int playerd;
+int Lives;
+
+/*-------------------------------------------------------------------------------------------------------------------*/
+
+//  SETUP
 
 void setup() {
   
   size(1280, 720);
   noStroke();
+  
   for (int i = 0; i < numBalls; i++) {
     balls[i] = new Ball(random(width), random(height), random(40, 50), i, balls);
   }
-  //Populates Coin Array
+  
+  //  Populates Coin Array
   for (int i = 0; i < coinNum; i++) {
    coins[i] = new Coin(color(#ffeb16),random(width),random(height));
-}
+  }
+  
+  for (Ball ball : balls) {
+    ball.moveInit();
+  }
+  
+  //  Player interger setup
+  player1x = width/12;
+  player1y = height/6;
+  player2x = width/8;
+  player2y = height/4;
+  playerd = 5;
+  Lives = 5;
   
 }
+
+/*-------------------------------------------------------------------------------------------------------------------*/
+
+//  DRAW
 
 void draw() {
   
   background(0);
-  //Draw and Remove Coins
-  for (int i = 0; i < coinNum; i++) {
-  coins[i].displaycoin();
-  coins[i].destroycoin();
-  }
   
-  //  Bouncy balls setup
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+  //  DRAW: Bouncy balls setup
   for (Ball ball : balls) {
     ball.collide();
     ball.move();
     ball.display();
   }
   
-  //  Player 1 setup
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+  //  DRAW: Player setup
+  
+  //  P1
   for (Ball p1 : balls) {
     p1.collide();
     p1.player1();
   }
   
-  /*  Player 2 setup
+  //  P2
   for (Ball p2 : balls) {
     p2.collide();
     p2.player2();
-  }*/
+  }
   
-  //  Text setup
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+  //  DRAW: Draw and Remove Coins
+  for (int i = 0; i < coinNum; i++) {
+  coins[i].displaycoin();
+  coins[i].destroycoin();
+  }
+  
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+  //  DRAW: Score setup
+  if (ScoreMath % 10 == 0){
+    setup();
+    ScoreMath += 91;
+    ScoreDisplay += 91;
+    Lives++;
+  }
+  
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+  //  DRAW: Text setup
+  
+  //  Formatting
   fill(255);
   textSize(width/50);
   
@@ -108,11 +161,23 @@ void draw() {
   
   //  Score
   text("SCORE", width*0.9, height/18);
-  text(Score, width*0.9, height/12);
+  text(ScoreDisplay, width*0.9, height/12);
+  
+  //  Lives
+  text("LIVES", width/2, height/18);
+  text(Lives, width/2, height/12);
   
 }
 
-// Coin Class and Functions
+/*---------------------------------------------------------------------------------------------------------------------
+
+END OF DRAW
+
+---------------------------------------------------------------------------------------------------------------------*/
+
+//  COINS
+
+//  Coin Class and Functions
 class Coin {
   color c;
   float cxpos;
@@ -136,13 +201,24 @@ class Coin {
        cxpos=-1000;
        cypos=-1000;
       
-       Score++;
-       println(Score);
+       ScoreMath++;
+       ScoreDisplay++;
+       println(ScoreMath);
      }
    }
 }
-     
+
+/*---------------------------------------------------------------------------------------------------------------------
+
+END OF COINS
+
+---------------------------------------------------------------------------------------------------------------------*/
+
+//  BALLS & PLAYERS
+
 class Ball {
+  
+  //  Interger setup
   
   float x, y;
   float diameter;
@@ -157,7 +233,11 @@ class Ball {
     diameter = din;
     id = idin;
     others = oin;
-  } 
+  }
+  
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+  //  COLLISION
   
   void collide() {
     for (int i = id + 1; i < numBalls; i++) {
@@ -176,16 +256,22 @@ class Ball {
         others[i].vx += ax;
         others[i].vy += ay;
       }
-      //  Player 1 collision
-      if (dist(player1x, player1y, x, y) < diameter-25){
+      //  Player collision
+      if (dist(player1x, player1y, x, y) < diameter-25 || dist(player2x, player2y, x, y) < diameter-25 && Lives >= -1){
+        player1x = width/12;
+        player1y = height/6;
+        player2x = width/8;
+        player2y = height/4;
+        Lives -= 1;
+      }else if (Lives <= -1){
         setup();
       }
-      /*  Player 2 collision
-      if (dist(player2x, player2y, x, y) < diameter-25){
-        setup();
-      }*/
     }
   }
+  
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+  //  BALL MOVEMENT
   
   void move() {
     vy += gravity;
@@ -209,28 +295,51 @@ class Ball {
     }
   }
   
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+  //  BALL DISPLAY
+  
   void display() {
     fill(255, 100, 100, 240);
     ellipse(x, y, diameter, diameter);
   }
   
-  //  Player 1 draw
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+  //  PLAYER DISPLAY
+  
+  //  P1
   void player1() {
     fill(100, 255, 100);
     ellipse(player1x, player1y, playerd, playerd);
   }
   
-  /*  Player 2 draw
+  //  P2
   void player2() {
     fill(100, 100, 255);
     ellipse(player2x, player2y, playerd, playerd);
-  }*/
+  }
   
-}
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+  //  BALL INITIAL VELOCITY
+  
+  void moveInit() {
+    vy += random(-1,1);
+    vx += random(-1,1);
+  }
+  
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+}  //  END OF BALLS & PLAYER
+
+/*-------------------------------------------------------------------------------------------------------------------*/
+
+//  PLAYER MOVEMENT
 
 void keyPressed(){
   
-  //  Player 1 movement
+  //  P1
   if (key == CODED){
     if (keyCode == DOWN){
       player1y += moveSpeed;
@@ -243,15 +352,17 @@ void keyPressed(){
     }
   }
   
-  /*  Player 2 movement
+  //  P2
   if (key == 's' || key == 'S'){
-    player2y += 5;
+    player2y += moveSpeed;
   }else if (key == 'w' || key == 'W'){
-    player2y -= 5;
+    player2y -= moveSpeed;
   }else if (key == 'd' || key == 'D'){
-    player2x += 5;
+    player2x += moveSpeed;
   }else if (key == 'a' || key == 'A'){
-    player2x -= 5;
-  }*/
+    player2x -= moveSpeed;
+  }
   
-}
+}  //  END OF PLAYER MOVEMENT
+
+/*-------------------------------------------------------------------------------------------------------------------*/
