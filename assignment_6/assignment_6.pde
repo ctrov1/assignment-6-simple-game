@@ -8,7 +8,7 @@
  * Taken from https://processing.org/examples/bouncybubbles.html
  * 
  * Written by Charlie Trovini & Sam Kaplan
- *
+ * Coins, resolution scaling, 
 
 -----------------------------------------------------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ PSUEDOCODE -- Rip-off Galaga  -- SCRAPPED
 //  INITIALIZE
 
 int numBalls = 18;
-float spring = 0.75;
+float spring = 0.1;
 float gravity = 0.0;
 float friction = -0.9;
 Ball[] balls = new Ball[numBalls];
@@ -59,7 +59,7 @@ int player1x;
 int player1y;
 int player2x;
 int player2y;
-int playerd;
+float playerd;
 int Lives;
 
 /*-------------------------------------------------------------------------------------------------------------------*/
@@ -68,11 +68,18 @@ int Lives;
 
 void setup() {
   
-  size(1280, 720);
+  size(500, 250);
   noStroke();
   
+  /*This variable is our scaling function, based on both width and height, it is
+  repeated throughout the code because it can't be declared as a global variable because
+  it uses width and height which are defined in setup */
+  float pythagscale = (sqrt((width*width +height*height)));
+  float ballSize = pythagscale/36.7;
+  
+  
   for (int i = 0; i < numBalls; i++) {
-    balls[i] = new Ball(random(width), random(height), random(40, 50), i, balls);
+    balls[i] = new Ball(i*(width/numBalls), random(height), ballSize, i, balls);
   }
   
   //  Populates Coin Array
@@ -89,11 +96,13 @@ void setup() {
   player1y = height/6;
   player2x = width/8;
   player2y = height/4;
-  playerd = 5;
+  playerd = pythagscale/100;
   Lives = 5;
   
 }  //  END OF SETUP
-
+//Global Scaling Variable
+float pythagscale = (sqrt((width*width +height*height)));
+ float ballSize = pythagscale/36.7;
 /*-------------------------------------------------------------------------------------------------------------------*/
 
 //  DRAW
@@ -121,11 +130,11 @@ void draw() {
     p1.player1();
   }
   
-  //  P2
+  /*  P2
   for (Ball p2 : balls) {
     p2.collide();
     p2.player2();
-  }
+  }*/
   
 /*-------------------------------------------------------------------------------------------------------------------*/
   
@@ -189,13 +198,13 @@ class Coin {
    void displaycoin() {
    fill(c);
    noStroke();
-   ellipse(cxpos,cypos,10,10);
+   ellipse(cxpos,cypos,pythagscale/12,pythagscale/12);
    }
    void destroycoin(){
      float coindistance = sqrt((cxpos-player1x) * (cxpos-player1x) + (cypos-player1y) * (cypos-player1y));
-     if (coindistance <=10){
-       cxpos=-1000;
-       cypos=-1000;
+     if (coindistance <=pythagscale/15){
+       cxpos=-10000;
+       cypos=-10000;
       
        ScoreMath++;
        ScoreDisplay++;
@@ -211,7 +220,8 @@ class Coin {
 class Ball {
   
   //  BALL: Interger setup
-  
+  float pythagscale = (sqrt((width*width +height*height)));
+  float ballSize = pythagscale/36.7;
   float x, y;
   float diameter;
   float vx = 0;
@@ -248,12 +258,20 @@ class Ball {
         others[i].vx += ax;
         others[i].vy += ay;
       }
-      //  Player collision
-      if (dist(player1x, player1y, x, y) < diameter-25 || dist(player2x, player2y, x, y) < diameter-25 && Lives >= -1){
+      /*  Player collision with P2 support
+      if (dist(player1x, player1y, x, y) < diameter-ballSize/2 || dist(player2x, player2y, x, y) < diameter-25 && Lives >= -1){
         player1x = width/12;
         player1y = height/6;
         player2x = width/8;
         player2y = height/4;
+        Lives -= 1;
+      }else if (Lives <= -1){
+        setup();
+      }*/
+      //  Player collision with P2 support
+      if (dist(player1x, player1y, x, y) < ballSize/2 + playerd/2 && Lives >= -1){
+        player1x = width/12;
+        player1y = height/6;
         Lives -= 1;
       }else if (Lives <= -1){
         setup();
@@ -293,7 +311,7 @@ class Ball {
   
   void display() {
     fill(255, 100, 100, 240);
-    ellipse(x, y, diameter, diameter);
+    ellipse(x, y, ballSize, ballSize);
   }
   
 /*-------------------------------------------------------------------------------------------------------------------*/
@@ -306,11 +324,11 @@ class Ball {
     ellipse(player1x, player1y, playerd, playerd);
   }
   
-  //  P2
+  /*  P2
   void player2() {
     fill(100, 100, 255);
     ellipse(player2x, player2y, playerd, playerd);
-  }
+  }*/
   
 /*-------------------------------------------------------------------------------------------------------------------*/
   
@@ -342,7 +360,7 @@ void keyPressed(){
     }
   }
   
-  //  P2
+  /*  P2
   if (key == 's' || key == 'S'){
     player2y += moveSpeed;
   }else if (key == 'w' || key == 'W'){
@@ -351,7 +369,7 @@ void keyPressed(){
     player2x += moveSpeed;
   }else if (key == 'a' || key == 'A'){
     player2x -= moveSpeed;
-  }
+  }*/
   
 }  //  END OF PLAYER MOVEMENT
 
