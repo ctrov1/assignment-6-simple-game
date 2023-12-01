@@ -259,7 +259,7 @@ class Ball {
         others[i].vy += ay;
       }
       /*  Player collision with P2 support
-      if (dist(player1x, player1y, x, y) < diameter-ballSize/2 || dist(player2x, player2y, x, y) < diameter-25 && Lives >= -1){
+      if (dist(player1x, player1y, x, y) < ballSize/2 + playerd/2 || dist(player2x, player2y, x, y) < ballSize/2 + playerd/2 && Lives >= -1){
         player1x = width/12;
         player1y = height/6;
         player2x = width/8;
@@ -268,7 +268,7 @@ class Ball {
       }else if (Lives <= -1){
         setup();
       }*/
-      //  Player collision with P2 support
+      //  Player collision
       if (dist(player1x, player1y, x, y) < ballSize/2 + playerd/2 && Lives >= -1){
         player1x = width/12;
         player1y = height/6;
