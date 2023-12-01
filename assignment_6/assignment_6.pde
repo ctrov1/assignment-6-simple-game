@@ -45,8 +45,10 @@ float spring = 0.1;
 float gravity = 0.0;
 float friction = -0.9;
 Ball[] balls = new Ball[numBalls];
+Player p1 = new Player();
+Player p2 = new Player();
 
-float moveSpeed = 10;
+float moveSpeed = 5;
 
 //  Coin Variables
 int coinNum = 9;
@@ -68,12 +70,12 @@ int Lives;
 
 void setup() {
   
-  size(500, 250);
+  size(1280, 720);
   noStroke();
   
-  /*This variable is our scaling function, based on both width and height, it is
-  repeated throughout the code because it can't be declared as a global variable because
-  it uses width and height which are defined in setup */
+  /*  This variable is our scaling function, based on both width and height, it
+      is repeated throughout the code because it can't be declared as a global
+      variable because it uses width and height which are defined in setup  */
   float pythagscale = (sqrt((width*width +height*height)));
   float ballSize = pythagscale/36.7;
   
@@ -99,10 +101,15 @@ void setup() {
   playerd = pythagscale/100;
   Lives = 5;
   
+  fill(100, 255, 100);
+  ellipse(player1x, player1y, playerd, playerd);
+  
 }  //  END OF SETUP
-//Global Scaling Variable
+
+//  Global Scaling Variable
 float pythagscale = (sqrt((width*width +height*height)));
- float ballSize = pythagscale/36.7;
+float ballSize = pythagscale/36.7;
+
 /*-------------------------------------------------------------------------------------------------------------------*/
 
 //  DRAW
@@ -123,18 +130,8 @@ void draw() {
 /*-------------------------------------------------------------------------------------------------------------------*/
   
   //  DRAW: Player setup
-  
-  //  P1
-  for (Ball p1 : balls) {
-    p1.collide();
-    p1.player1();
-  }
-  
-  /*  P2
-  for (Ball p2 : balls) {
-    p2.collide();
-    p2.player2();
-  }*/
+  p1.displayp1();
+  p2.displayp2();
   
 /*-------------------------------------------------------------------------------------------------------------------*/
   
@@ -215,7 +212,7 @@ class Coin {
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 
-//  BALLS & PLAYERS
+//  BALLS
 
 class Ball {
   
@@ -239,7 +236,7 @@ class Ball {
   
 /*-------------------------------------------------------------------------------------------------------------------*/
   
-  //  BALL: COLLISION
+  //  BALL: COLLISION (+ PLAYER)
   
   void collide() {
     for (int i = id + 1; i < numBalls; i++) {
@@ -259,7 +256,7 @@ class Ball {
         others[i].vy += ay;
       }
       /*  Player collision with P2 support
-      if (dist(player1x, player1y, x, y) < ballSize/2 + playerd/2 || dist(player2x, player2y, x, y) < ballSize/2 + playerd/2 && Lives >= -1){
+      if (dist(player1x, player1y, x, y) < ballSize/2 + playerd/2 && Lives >= -1 || dist(player2x, player2y, x, y) < ballSize/2 + playerd/2 && Lives >= -1){
         player1x = width/12;
         player1y = height/6;
         player2x = width/8;
@@ -316,22 +313,6 @@ class Ball {
   
 /*-------------------------------------------------------------------------------------------------------------------*/
   
-  //  PLAYER: DISPLAY
-  
-  //  P1
-  void player1() {
-    fill(100, 255, 100);
-    ellipse(player1x, player1y, playerd, playerd);
-  }
-  
-  /*  P2
-  void player2() {
-    fill(100, 100, 255);
-    ellipse(player2x, player2y, playerd, playerd);
-  }*/
-  
-/*-------------------------------------------------------------------------------------------------------------------*/
-  
   //  BALL: INITIAL VELOCITY
   
   void moveInit() {
@@ -339,18 +320,56 @@ class Ball {
     vx += random(-1,1);
   }
   
-}  //  END OF BALLS & PLAYERS
+}  //  END OF BALLS
 
+/*-------------------------------------------------------------------------------------------------------------------*/
+  
+//  PLAYER: DISPLAY
+  
+//  P1
+class Player {
+  
+  void displayp1() {
+    if (keyCode == DOWN && keyPressed == true){
+      player1y += moveSpeed;
+    }else if (keyCode == UP && keyPressed == true){
+      player1y -= moveSpeed;
+    }else if (keyCode == RIGHT && keyPressed == true){
+      player1x += moveSpeed;
+    }else if (keyCode == LEFT && keyPressed == true){
+      player1x -= moveSpeed;
+    }
+    fill(100, 255, 100);
+    ellipse(player1x, player1y, playerd, playerd);
+  }
+  
+  
+  void displayp2() {
+    if (key == 's' && keyPressed == true || key == 'S' && keyPressed == true){
+    player2y += moveSpeed;
+  }else if (key == 'w' && keyPressed == true || key == 'W' && keyPressed == true){
+    player2y -= moveSpeed;
+  }else if (key == 'd' && keyPressed == true || key == 'D' && keyPressed == true){
+    player2x += moveSpeed;
+  }else if (key == 'a' && keyPressed == true || key == 'A' && keyPressed == true){
+    player2x -= moveSpeed;
+  }
+    fill(100, 100, 255);
+    ellipse(player2x, player2y, playerd, playerd);
+  }
+  
+}
+  
 /*-------------------------------------------------------------------------------------------------------------------*/
 
 //  PLAYER MOVEMENT
 
 void keyPressed(){
   
-  //  P1
+  /*  P1
   if (key == CODED){
     if (keyCode == DOWN){
-      player1y += moveSpeed;
+      translate(0, player1y + moveSpeed);
     }else if (keyCode == UP){
       player1y -= moveSpeed;
     }else if (keyCode == RIGHT){
