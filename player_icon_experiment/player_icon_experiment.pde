@@ -4,7 +4,7 @@ PShape p2_icon;
 void setup(){
   
   noStroke();
-  size (1280, 720);
+  size (6400, 3600);
   
   /*  Original coordinates scaled to 6400 x 3600:
   
@@ -18,6 +18,8 @@ void setup(){
   PShape p2_circle = createShape(ELLIPSE,200,450,60,60);
   PShape p2_topquad = createShape(QUAD,130,400,270,400,240,360,160,360);
   
+  //Hitbox
+  ellipse(200,130,120,120);
   */
   
   p1_icon = createShape(GROUP);
@@ -29,10 +31,15 @@ void setup(){
   PShape p1_circle = createShape(ELLIPSE,width/32,height/24,width/106.66667,height/60);
   fill(221, 94, 221);
   PShape p1_topquad = createShape(QUAD,width/49.23077,height/36,width/23.70370,height/36,width/26.66667,height/60,width/40,height/60);
+  PShape p1_hitbox = createShape(ELLIPSE,width/32,height/27.69231,width/53.33333,height/30);
+  p1_icon.addChild(p1_hitbox);
   p1_icon.addChild(p1_outerquad);
   p1_icon.addChild(p1_innerquad);
   p1_icon.addChild(p1_circle);
   p1_icon.addChild(p1_topquad);
+  
+  //Hitbox
+  ellipse(200,130,120,120);
   
   p2_icon = createShape(GROUP);
   fill(255,255,255);
@@ -43,6 +50,8 @@ void setup(){
   PShape p2_circle = createShape(ELLIPSE,width/32,height/8,width/106.66667,height/60);
   fill(255, 133, 25);
   PShape p2_topquad = createShape(QUAD,width/49.23077,height/9,width/23.70370,height/9,width/26.66667,height/10,width/40,height/10);
+  PShape p2_hitbox = createShape(ELLIPSE,width/32,height/8.37209,width/53.33333,height/30);
+  p2_icon.addChild(p2_hitbox);
   p2_icon.addChild(p2_outerquad);
   p2_icon.addChild(p2_innerquad);
   p2_icon.addChild(p2_circle);
@@ -55,5 +64,4 @@ void draw(){
   //scale(0.2);
   shape(p1_icon);
   shape(p2_icon);
-  //ellipse(200,130,120,120);
 }

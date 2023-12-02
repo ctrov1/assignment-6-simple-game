@@ -5,7 +5,9 @@
  * based on code from Keith Peters. 
  * 
  * Multiple-object collision.
- * Taken from https://processing.org/examples/bouncybubbles.html
+ * Bouncy balls adapted from https://processing.org/examples/bouncybubbles.html
+ * Timer adapted from https://openprocessing.org/sketch/391986/
+ * Sounds and music taken from freesound.org
  * 
  * Written by Charlie Trovini & Sam Kaplan
  * Coins, resolution scaling, 
@@ -40,29 +42,60 @@ PSUEDOCODE -- Rip-off Galaga  -- SCRAPPED
 
 //  INITIALIZE
 
+import processing.sound.*;
+
 int numBalls = 18;
 float spring = 0.1;
 float gravity = 0.0;
 float friction = -0.9;
 Ball[] balls = new Ball[numBalls];
 Player p1 = new Player();
-Player p2 = new Player();
+//Player p2 = new Player();
 
-float moveSpeed = 5;
+float moveSpeedY;
+float moveSpeedX;
 
 //  Coin Variables
-int coinNum = 9;
-int ScoreMath = 1;
-int ScoreDisplay = 0;
+int coinNum = 10;
+int Score = 0;
 Coin[] coins = new Coin[coinNum];
 
 //  Player intergers
 int player1x;
 int player1y;
+PShape p1_icon;
+float p1hboxx;
+float p1hboxy;
+/*
 int player2x;
 int player2y;
+PShape p2_icon;
+float p2hboxx;
+float p2hboxy;*/
 float playerd;
-int Lives;
+int Lives = 2500;
+
+/*
+boolean MoveP1Down = false;
+boolean MoveP1Up = false;
+boolean MoveP1Left = false;
+boolean MoveP1Right = false;
+
+boolean MoveP2Down = false;
+boolean MoveP2Up = false;
+boolean MoveP2Left = false;
+boolean MoveP2Right = false;*/
+
+//  Timer
+int timer;
+int timerStart;
+int countDown;
+int countDownStart;
+
+//  SFX
+SoundFile collect;
+SoundFile nextLevel;
+SoundFile song;
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 
@@ -70,15 +103,14 @@ int Lives;
 
 void setup() {
   
-  size(1280, 720);
+  size(1920, 1080);
   noStroke();
   
   /*  This variable is our scaling function, based on both width and height, it
       is repeated throughout the code because it can't be declared as a global
       variable because it uses width and height which are defined in setup  */
-  float pythagscale = (sqrt((width*width +height*height)));
+  float pythagscale = (sqrt((width*width + height*height)));
   float ballSize = pythagscale/36.7;
-  
   
   for (int i = 0; i < numBalls; i++) {
     balls[i] = new Ball(i*(width/numBalls), random(height), ballSize, i, balls);
@@ -96,18 +128,69 @@ void setup() {
   //  Player interger setup
   player1x = width/12;
   player1y = height/6;
+  p1hboxx = width/32;
+  p1hboxy = height/27.69231;
+  /*
   player2x = width/8;
   player2y = height/4;
+  p2hboxx = width/32;
+  p2hboxy = height/8.37209;*/
   playerd = pythagscale/100;
-  Lives = 5;
+  moveSpeedY = height/144;
+  moveSpeedX = width/256;
   
-  fill(100, 255, 100);
-  ellipse(player1x, player1y, playerd, playerd);
+  //  P1 graphic
+  p1_icon = createShape(GROUP);
+  fill(255,255,255);
+  PShape p1_outerquad = createShape(QUAD,width/49.23077,height/36,width/23.70370,height/36,width/26.12245,height/18,width/41.29032,height/18);
+  fill(0,0,0);
+  PShape p1_innerquad = createShape(QUAD,width/42.66667,height/32.72727,width/25.6,height/32.72727,width/27.82609,height/18.94737,width/37.64706,height/18.94737);
+  fill(255,255,255);
+  PShape p1_circle = createShape(ELLIPSE,width/32,height/24,width/106.66667,height/60);
+  fill(221, 94, 221);
+  PShape p1_topquad = createShape(QUAD,width/49.23077,height/36,width/23.70370,height/36,width/26.66667,height/60,width/40,height/60);
+  p1_icon.addChild(p1_outerquad);
+  p1_icon.addChild(p1_innerquad);
+  p1_icon.addChild(p1_circle);
+  p1_icon.addChild(p1_topquad);
+  
+  /*  P2 graphic
+  p2_icon = createShape(GROUP);
+  fill(255,255,255);
+  PShape p2_outerquad = createShape(QUAD,width/49.23077,height/9,width/23.70370,height/9,width/26.12245,height/7.2,width/41.29032,height/7.2);
+  fill(0,0,0);
+  PShape p2_innerquad = createShape(QUAD,width/42.66667,height/8.78049,width/25.6,height/8.78049,width/27.82609,height/7.34694,width/37.64706,height/7.34694);
+  fill(255,255,255);
+  PShape p2_circle = createShape(ELLIPSE,width/32,height/8,width/106.66667,height/60);
+  fill(255, 133, 25);
+  PShape p2_topquad = createShape(QUAD,width/49.23077,height/9,width/23.70370,height/9,width/26.66667,height/10,width/40,height/10);
+  p2_icon.addChild(p2_outerquad);
+  p2_icon.addChild(p2_innerquad);
+  p2_icon.addChild(p2_circle);
+  p2_icon.addChild(p2_topquad);*/
+  
+  //  Timer
+  timerStart = int(millis()/1000);
+  countDown  = countDownStart;
+  countDownStart = 15;
+  
+  //  SFX
+  collect = new SoundFile(this, "collect.wav");
+  nextLevel = new SoundFile(this, "nextLevel.wav");
+  song = new SoundFile(this, "song.wav");
+  
+  //  coinNum reset check
+  if (Score > 0){
+    coinNum = 9;
+  }else{
+    coinNum = 10;
+    song.loop();
+  }
   
 }  //  END OF SETUP
 
 //  Global Scaling Variable
-float pythagscale = (sqrt((width*width +height*height)));
+float pythagscale = (sqrt((width*width + height*height)));
 float ballSize = pythagscale/36.7;
 
 /*-------------------------------------------------------------------------------------------------------------------*/
@@ -118,61 +201,58 @@ void draw() {
   
   background(0);
   
-/*-------------------------------------------------------------------------------------------------------------------*/
-  
-  //  DRAW: Bouncy balls setup
+  //  DRAW: Balls
   for (Ball ball : balls) {
     ball.collide();
     ball.move();
     ball.display();
   }
   
-/*-------------------------------------------------------------------------------------------------------------------*/
-  
-  //  DRAW: Player setup
+  //  DRAW: Players
   p1.displayp1();
-  p2.displayp2();
+  //p2.displayp2();
   
-/*-------------------------------------------------------------------------------------------------------------------*/
-  
-  //  DRAW: Draw and Remove Coins
+  //  DRAW: Coins
   for (int i = 0; i < coinNum; i++) {
   coins[i].displaycoin();
   coins[i].destroycoin();
   }
   
-/*-------------------------------------------------------------------------------------------------------------------*/
-  
-  //  DRAW: Score setup
-  if (ScoreMath % 10 == 0){
+  //  DRAW: Score
+  if (Score % 10 == 0 && Score != 0){
     setup();
-    ScoreMath += 91;
-    ScoreDisplay += 91;
-    Lives++;
+    Score += 91;
+    Lives += 1000;
+    nextLevel.play();
   }
   
-/*-------------------------------------------------------------------------------------------------------------------*/
-  
-  //  DRAW: Text setup
-  
+  //  DRAW: Text
   //  Formatting
   fill(255);
   textSize(width/50);
   
   //  Timer
+  timer = int(millis()/ 1000 - timerStart);     // counts up from the start time (0)
+  countDown = int (countDownStart - timer);   // counts down from the start time (15)
   text("TIME", width/24, height/18);
+  text("", width/24, height/12);
   text(":", width/17, height/12);
-  text(minute(), width/24, height/12);
-  text(second(), width/16, height/12);
+  text(countDown, width/16, height/12);
   
   //  Score
   text("SCORE", width*0.9, height/18);
-  text(ScoreDisplay, width*0.9, height/12);
+  text(Score, width*0.9, height/12);
   
-  //  Lives
-  text("LIVES", width/2, height/18);
-  text(Lives, width/2, height/12);
-  
+  if (countDown == -1){
+    fill(255,255,255);
+    textSize(width/24 + height/13.5);
+    text("GAME OVER", width/3.55, height/2);
+    Score = 0;
+    Lives = 0;
+    Lives += 2500;
+    song.stop();
+    setup();
+  }
 }  //  END OF DRAW
 
 /*-------------------------------------------------------------------------------------------------------------------*/
@@ -198,14 +278,13 @@ class Coin {
    ellipse(cxpos,cypos,pythagscale/12,pythagscale/12);
    }
    void destroycoin(){
-     float coindistance = sqrt((cxpos-player1x) * (cxpos-player1x) + (cypos-player1y) * (cypos-player1y));
+     float coindistance = sqrt((cxpos-p1hboxx) * (cxpos-p1hboxx) + (cypos-p1hboxy) * (cypos-p1hboxy));
      if (coindistance <=pythagscale/15){
        cxpos=-10000;
        cypos=-10000;
-      
-       ScoreMath++;
-       ScoreDisplay++;
-       println(ScoreMath);
+       countDownStart += 2;
+       Score++;
+       collect.play();
      }
    }
 }  //  END OF COINS
@@ -217,7 +296,7 @@ class Coin {
 class Ball {
   
   //  BALL: Interger setup
-  float pythagscale = (sqrt((width*width +height*height)));
+  float pythagscale = (sqrt((width*width + height*height)));
   float ballSize = pythagscale/36.7;
   float x, y;
   float diameter;
@@ -255,22 +334,22 @@ class Ball {
         others[i].vx += ax;
         others[i].vy += ay;
       }
-      /*  Player collision with P2 support
-      if (dist(player1x, player1y, x, y) < ballSize/2 + playerd/2 && Lives >= -1 || dist(player2x, player2y, x, y) < ballSize/2 + playerd/2 && Lives >= -1){
-        player1x = width/12;
-        player1y = height/6;
-        player2x = width/8;
-        player2y = height/4;
-        Lives -= 1;
-      }else if (Lives <= -1){
-        setup();
-      }*/
       //  Player collision
-      if (dist(player1x, player1y, x, y) < ballSize/2 + playerd/2 && Lives >= -1){
-        player1x = width/12;
-        player1y = height/6;
+      if (dist(p1hboxx, p1hboxy, x, y) < ballSize/2 && Lives >= -1){
+        background(255,0,0);
+        fill(255,255,255);
+        text("MELTING!", width/2.1, height/18);
+        text("0:", width/1.98, height/12);
+        text(Lives, width/1.92, height/12);
         Lives -= 1;
       }else if (Lives <= -1){
+        fill(255,255,255);
+        textSize(width/24 + height/13.5);
+        text("GAME OVER", width/3.55, height/2);
+        Score = 0;
+        Lives += 2500;
+        song.stop();
+        delay(3000);
         setup();
       }
     }
@@ -323,73 +402,86 @@ class Ball {
 }  //  END OF BALLS
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-  
-//  PLAYER: DISPLAY
-  
-//  P1
+
+//  PLAYERS
+
 class Player {
   
+  //  Player 1
   void displayp1() {
     if (keyCode == DOWN && keyPressed == true){
-      player1y += moveSpeed;
-    }else if (keyCode == UP && keyPressed == true){
-      player1y -= moveSpeed;
-    }else if (keyCode == RIGHT && keyPressed == true){
-      player1x += moveSpeed;
-    }else if (keyCode == LEFT && keyPressed == true){
-      player1x -= moveSpeed;
+      p1hboxy += moveSpeedY;
+      p1_icon.translate(0,height/144);
+      //MoveP1Down = true;
     }
-    fill(100, 255, 100);
-    ellipse(player1x, player1y, playerd, playerd);
+    if (keyCode == UP && keyPressed == true){
+      p1hboxy -= moveSpeedY;
+      p1_icon.translate(0,-height/144);
+      //MoveP1Up = true;
+    }
+    if (keyCode == RIGHT && keyPressed == true){
+      p1hboxx += moveSpeedX;
+      p1_icon.translate(width/256,0);
+      //MoveP1Right = true;
+    }
+    if (keyCode == LEFT && keyPressed == true){
+      p1hboxx -= moveSpeedX;
+      p1_icon.translate(-width/256,0);
+      //MoveP1Left = true;
+    }/*else{
+      MoveP1Down = false;
+      MoveP1Up = false;
+      MoveP1Right = false;
+      MoveP1Left = false;
+    }*/
+    ellipse(p1hboxx,p1hboxy,width/53.33333,height/30);
+    shape(p1_icon);
   }
   
-  
+  /*  Player 2
   void displayp2() {
     if (key == 's' && keyPressed == true || key == 'S' && keyPressed == true){
-    player2y += moveSpeed;
+    p2hboxy += moveSpeedY;
+    p2_icon.translate(0,height/144);
+    MoveP2Down = true;
   }else if (key == 'w' && keyPressed == true || key == 'W' && keyPressed == true){
-    player2y -= moveSpeed;
+    p2hboxy -= moveSpeedY;
+    p2_icon.translate(0,height/144);
+    MoveP2Up = true;
   }else if (key == 'd' && keyPressed == true || key == 'D' && keyPressed == true){
-    player2x += moveSpeed;
+    p2hboxx += moveSpeedX;
+    p2_icon.translate(width/256,0);
+    MoveP2Right = true;
   }else if (key == 'a' && keyPressed == true || key == 'A' && keyPressed == true){
-    player2x -= moveSpeed;
+    p2hboxx -= moveSpeedX;
+    p2_icon.translate(width/256,0);
+    MoveP2Left = true;
+  }else{
+    MoveP2Down = false;
+    MoveP2Up = false;
+    MoveP2Right = false;
+    MoveP2Left = false;
   }
-    fill(100, 100, 255);
-    ellipse(player2x, player2y, playerd, playerd);
+    ellipse(p2hboxx,p2hboxy,width/53.33333,height/30);
+    shape(p2_icon);
   }
   
-}
-  
-/*-------------------------------------------------------------------------------------------------------------------*/
-
-//  PLAYER MOVEMENT
-
-void keyPressed(){
-  
-  /*  P1
-  if (key == CODED){
-    if (keyCode == DOWN){
-      translate(0, player1y + moveSpeed);
-    }else if (keyCode == UP){
+  void MoveBoth() {
+    if (MoveP2Down == true && MoveP1Down == true){
+      player2y += moveSpeed;
+      player1y += moveSpeed;
+    }else if (MoveP2Up == true && MoveP1Up == true){
+      player2y -= moveSpeed;
       player1y -= moveSpeed;
-    }else if (keyCode == RIGHT){
+    }else if (MoveP2Right == true && MoveP1Right == true){
+      player2x += moveSpeed;
       player1x += moveSpeed;
-    }else if (keyCode == LEFT){
+    }else if (MoveP2Left == true && MoveP1Left == true){
+      player2x -= moveSpeed;
       player1x -= moveSpeed;
     }
-  }
-  
-  /*  P2
-  if (key == 's' || key == 'S'){
-    player2y += moveSpeed;
-  }else if (key == 'w' || key == 'W'){
-    player2y -= moveSpeed;
-  }else if (key == 'd' || key == 'D'){
-    player2x += moveSpeed;
-  }else if (key == 'a' || key == 'A'){
-    player2x -= moveSpeed;
   }*/
   
-}  //  END OF PLAYER MOVEMENT
+}  //  END OF PLAYERS
 
 /*-------------------------------------------------------------------------------------------------------------------*/
