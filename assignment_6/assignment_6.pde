@@ -12,70 +12,44 @@
  * Written by Charlie Trovini & Sam Kaplan
  * Coins, resolution scaling, 
 
------------------------------------------------------------------------------------------------------------------------
-
-NEW PSUEDOCODE -- Rip-off Pac-Man  -- CURRENT
-
-1. Obstacle-based game, touching balls kills player
-2. Coins scattered around randomly with for statement
-3. Collecting coins contributes to score
-4. Collecting all coins adds +500 score and resets screen for new level
-5. Power-up to increase movement speed
-6. Title screen
-
-PSUEDOCODE -- Rip-off Galaga  -- SCRAPPED
-
-1. Player character controlled on screen dodging balls
-2. Player character animated with jetpack when moving
-3. Screen scroll
-4. 3 HP + lives system
-5. Player character has gun to explode balls to score points
-6. Big balls divide into smaller ones when shot
-7. Balls that are small enough explode without dividing
-8. Balls display score given when exploded
-9. Spawn balls with random color values
-10. Redesigned balls to be bubbles
-11. Short, quickly decaying smoke trail on jetpack
-12. Animated background
-
 ---------------------------------------------------------------------------------------------------------------------*/
 
 //  INITIALIZE
 
 import processing.sound.*;
 
+//  Ball variables
 int numBalls = 18;
-float spring = 0.1;
+float spring = 1.5;
 float gravity = 0.0;
 float friction = -0.9;
 Ball[] balls = new Ball[numBalls];
-Player p1 = new Player();
-//Player p2 = new Player();
 
-float moveSpeedY;
-float moveSpeedX;
-
-//  Coin Variables
+//  Coin variables
 int coinNum = 10;
 int Score = 0;
 Coin[] coins = new Coin[coinNum];
 
-//  Player intergers
+//  Player variables
 int player1x;
 int player1y;
 PShape p1_icon;
 float p1hboxx;
 float p1hboxy;
-/*
+Player p1 = new Player();
+/*  P2
 int player2x;
 int player2y;
 PShape p2_icon;
 float p2hboxx;
-float p2hboxy;*/
+float p2hboxy;
+Player p2 = new Player();*/
 float playerd;
-int Lives = 2500;
+int Lives = 1000;
+float moveSpeedY;
+float moveSpeedX;
 
-/*
+/*  Non-functional MoveBoth
 boolean MoveP1Down = false;
 boolean MoveP1Up = false;
 boolean MoveP1Left = false;
@@ -86,16 +60,17 @@ boolean MoveP2Up = false;
 boolean MoveP2Left = false;
 boolean MoveP2Right = false;*/
 
-//  Timer
+//  Timer variables
 int timer;
 int timerStart;
 int countDown;
 int countDownStart;
 
-//  SFX
+//  SFX variables
 SoundFile collect;
 SoundFile nextLevel;
 SoundFile song;
+SoundFile die;
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 
@@ -103,15 +78,16 @@ SoundFile song;
 
 void setup() {
   
+  //  Suggested aspect ratio: 16:9
   size(1280, 720);
   noStroke();
   
-  /*  This variable is our scaling function, based on both width and height, it
-      is repeated throughout the code because it can't be declared as a global
-      variable because it uses width and height which are defined in setup  */
+  //  Global Scaling Variable
+  //GSV();
   float pythagscale = (sqrt((width*width + height*height)));
   float ballSize = pythagscale/36.7;
   
+  //  Populates Bouncy Balls
   for (int i = 0; i < numBalls; i++) {
     balls[i] = new Ball(i*(width/numBalls), random(height), ballSize, i, balls);
   }
@@ -121,6 +97,7 @@ void setup() {
    coins[i] = new Coin(color(#ffeb16),random(width),random(height));
   }
   
+  //  Ball movement
   for (Ball ball : balls) {
     ball.moveInit();
   }
@@ -130,7 +107,7 @@ void setup() {
   player1y = height/6;
   p1hboxx = width/32;
   p1hboxy = height/27.69231;
-  /*
+  /*  P2
   player2x = width/8;
   player2y = height/4;
   p2hboxx = width/32;
@@ -178,6 +155,7 @@ void setup() {
   collect = new SoundFile(this, "collect.wav");
   nextLevel = new SoundFile(this, "nextLevel.wav");
   song = new SoundFile(this, "song.wav");
+  die = new SoundFile(this, "die.wav");
   
   //  coinNum reset check
   if (Score > 0){
@@ -188,10 +166,6 @@ void setup() {
   }
   
 }  //  END OF SETUP
-
-//  Global Scaling Variable
-float pythagscale = (sqrt((width*width + height*height)));
-float ballSize = pythagscale/36.7;
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 
@@ -243,17 +217,44 @@ void draw() {
   text("SCORE", width*0.9, height/18);
   text(Score, width*0.9, height/12);
   
+  //  Kill player if timer reaches 0
   if (countDown == -1){
-    fill(255,255,255);
-    textSize(width/24 + height/13.5);
-    text("GAME OVER", width/3.55, height/2);
-    Score = 0;
-    Lives = 0;
-    Lives += 2500;
-    song.stop();
-    setup();
+    GameOver();
   }
 }  //  END OF DRAW
+
+/*-------------------------------------------------------------------------------------------------------------------*/
+
+/*  GLOBAL SCALING VARIABLE  — Non-functional as custom function
+    This variable is our scaling function, based on both width and height, it
+    is repeated throughout the code because it can't be declared as a global
+    variable because it uses width and height which are defined in setup
+*/
+
+void GSV() {
+  
+  float pythagscale = (sqrt((width*width + height*height)));
+  float ballSize = pythagscale/36.7;
+  
+}
+
+/*-------------------------------------------------------------------------------------------------------------------*/
+
+//  GAME OVER STATE
+
+void GameOver() {
+  
+  fill(255,255,255);
+  textSize(width/24 + height/13.5);
+  text("GAME OVER", width/3.55, height/2);
+  Score = 0;
+  Lives = 0;
+  Lives += 1000;
+  song.stop();
+  die.play();
+  setup();
+  
+}  //  END OF GAME OVER STATE
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 
@@ -261,6 +262,13 @@ void draw() {
 
 //  Coin Class and Functions
 class Coin {
+
+  //  Global Scaling Variable
+  //{
+  //  GSV();
+  //}
+  float pythagscale = (sqrt((width*width + height*height)));
+  
   color c;
   float cxpos;
   float cypos;
@@ -275,11 +283,11 @@ class Coin {
    void displaycoin() {
    fill(c);
    noStroke();
-   ellipse(cxpos,cypos,pythagscale/12,pythagscale/12);
+   ellipse(cxpos,cypos,pythagscale/90,pythagscale/90);
    }
    void destroycoin(){
      float coindistance = sqrt((cxpos-p1hboxx) * (cxpos-p1hboxx) + (cypos-p1hboxy) * (cypos-p1hboxy));
-     if (coindistance <=pythagscale/9){
+     if (coindistance <=pythagscale/70){
        cxpos=-10000;
        cypos=-10000;
        countDownStart += 2;
@@ -295,9 +303,15 @@ class Coin {
 
 class Ball {
   
-  //  BALL: Interger setup
+  //  Global Scaling Variable
+  //{
+  //  GSV();
+  //}
   float pythagscale = (sqrt((width*width + height*height)));
   float ballSize = pythagscale/36.7;
+  
+  
+  //  BALL: Interger setup
   float x, y;
   float diameter;
   float vx = 0;
@@ -342,15 +356,8 @@ class Ball {
         text("0:", width/1.98, height/12);
         text(Lives, width/1.92, height/12);
         Lives -= 1;
-      }else if (Lives <= -1){
-        fill(255,255,255);
-        textSize(width/24 + height/13.5);
-        text("GAME OVER", width/3.55, height/2);
-        Score = 0;
-        Lives += 2500;
-        song.stop();
-        delay(3000);
-        setup();
+      }else if (Lives <= -1){  //  Kill player when fully melted
+        GameOver();
       }
     }
   }
@@ -395,8 +402,8 @@ class Ball {
   //  BALL: INITIAL VELOCITY
   
   void moveInit() {
-    vy += random(-1,1);
-    vx += random(-1,1);
+    vy += random(-2,2);
+    vx += random(-2,2);
   }
   
 }  //  END OF BALLS
@@ -434,7 +441,9 @@ class Player {
       MoveP1Right = false;
       MoveP1Left = false;
     }*/
+    //  P1 Hitbox
     ellipse(p1hboxx,p1hboxy,width/53.33333,height/30);
+    //  P1 Player Icon
     shape(p1_icon);
   }
   
@@ -462,7 +471,9 @@ class Player {
     MoveP2Right = false;
     MoveP2Left = false;
   }
+    //  P2 Hitbox
     ellipse(p2hboxx,p2hboxy,width/53.33333,height/30);
+    //  P2 Player Icon
     shape(p2_icon);
   }
   
