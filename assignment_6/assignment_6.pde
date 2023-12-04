@@ -103,7 +103,7 @@ SoundFile song;
 
 void setup() {
   
-  size(1920, 1080);
+  size(1280, 720);
   noStroke();
   
   /*  This variable is our scaling function, based on both width and height, it
@@ -279,7 +279,7 @@ class Coin {
    }
    void destroycoin(){
      float coindistance = sqrt((cxpos-p1hboxx) * (cxpos-p1hboxx) + (cypos-p1hboxy) * (cypos-p1hboxy));
-     if (coindistance <=pythagscale/15){
+     if (coindistance <=pythagscale/9){
        cxpos=-10000;
        cypos=-10000;
        countDownStart += 2;
@@ -335,7 +335,7 @@ class Ball {
         others[i].vy += ay;
       }
       //  Player collision
-      if (dist(p1hboxx, p1hboxy, x, y) < ballSize/2 && Lives >= -1){
+      if (dist(p1hboxx, p1hboxy, x, y) < ballSize/1.25 && Lives >= -1){
         background(255,0,0);
         fill(255,255,255);
         text("MELTING!", width/2.1, height/18);
