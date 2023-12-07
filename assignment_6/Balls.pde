@@ -10,7 +10,7 @@ class Ball {
   //}
   float pythagscale = (sqrt((width*width + height*height)));
   float ballSize = pythagscale/36.7;
-  float spring = pythagscale/1000;
+  float spring = pythagscale/1400;
   
   //  BALL: Interger setup
   float x, y;

@@ -78,7 +78,8 @@ SoundFile die;
 void setup() {
   
   //  Suggested aspect ratio: 16:9
-  size(1280, 720);
+  //  Built with 1280 x 720 as reference point
+  size(1920, 1080);
   noStroke();
   
   //  Global Scaling Variable
@@ -235,6 +236,7 @@ void GSV() {
   
   float pythagscale = (sqrt((width*width + height*height)));
   float ballSize = pythagscale/36.7;
+  float spring = pythagscale/1400;
   
 }
 
@@ -244,9 +246,10 @@ void GSV() {
 
 void GameOver() {
   
-  fill(255,255,255);
-  textSize(width/24 + height/13.5);
-  text("GAME OVER", width/3.55, height/2);
+  //  GAME OVER text
+  //fill(255,255,255);
+  //textSize(width/24 + height/13.5);
+  //text("GAME OVER", width/3.55, height/2);
   Score = 0;
   Lives = 0;
   Lives += 1500;
