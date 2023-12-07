@@ -53,7 +53,7 @@ class Ball {
       if (dist(p1hboxx, p1hboxy, x, y) < ballSize/1.25 && Lives >= -1){
         background(255,0,0);
         fill(255,255,255);
-        text("MELTING!", width/2.1, height/18);
+        text("DANGER!", width/2.1, height/18);
         text("0:", width/1.98, height/12);
         text(Lives, width/1.92, height/12);
         Lives -= 1;

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------------------------------
 
- *
+ * Name: TBD
  * Bouncy Bubbles  
  * based on code from Keith Peters. 
  * 
@@ -173,7 +173,7 @@ void setup() {
 
 void draw() {
   
-  background(0);
+  background(0,60,75);
   
   //  DRAW: Balls
   for (Ball ball : balls) {
