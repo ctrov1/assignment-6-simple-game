@@ -10,7 +10,6 @@
  * Sounds and music taken from freesound.org
  * 
  * Written by Charlie Trovini & Sam Kaplan
- * Coins, resolution scaling, 
 
 ---------------------------------------------------------------------------------------------------------------------*/
 
@@ -20,7 +19,7 @@ import processing.sound.*;
 
 //  Ball variables
 int numBalls = 18;
-float spring = 1.5;
+//float spring = pythagscale/100;
 float gravity = 0.0;
 float friction = -0.9;
 Ball[] balls = new Ball[numBalls];
@@ -45,7 +44,7 @@ float p2hboxx;
 float p2hboxy;
 Player p2 = new Player();*/
 float playerd;
-int Lives = 1000;
+int Lives = 1500;
 float moveSpeedY;
 float moveSpeedX;
 
@@ -196,7 +195,8 @@ void draw() {
   if (Score % 10 == 0 && Score != 0){
     setup();
     Score += 91;
-    Lives += 1000;
+    //The below line can be used to add lives every time you win
+   // Lives += 500;
     nextLevel.play();
   }
   
@@ -249,7 +249,7 @@ void GameOver() {
   text("GAME OVER", width/3.55, height/2);
   Score = 0;
   Lives = 0;
-  Lives += 1000;
+  Lives += 1500;
   song.stop();
   die.play();
   setup();
