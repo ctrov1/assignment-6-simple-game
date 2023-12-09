@@ -1,26 +1,20 @@
-/*-------------------------------------------------------------------------------------------------------------------*/
-
 //  BALLS
 
 class Ball {
   
-  //  Global Scaling Variable
-  //{
-  //  GSV();
-  //}
-  float pythagscale = (sqrt((width*width + height*height)));
-  float ballSize = pythagscale/36.7;
-  float spring = pythagscale/1400;
-  
   //  BALL: Interger setup
+  {
+    GSV();  //  Global Scaling Variable
+  }
   float x, y;
   float diameter;
   float vx = 0;
   float vy = 0;
+  float spring = pythagscale/1400;
   int id;
   Ball[] others;
- 
-  Ball(float xin, float yin, float din, int idin, Ball[] oin) {
+  
+  Ball(float xin, float yin, float din, int idin, Ball[] oin){
     x = xin;
     y = yin;
     diameter = din;
@@ -28,7 +22,7 @@ class Ball {
     others = oin;
   }
   
-/*-------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
   
   //  BALL: COLLISION (+ PLAYER)
   
@@ -50,20 +44,20 @@ class Ball {
         others[i].vy += ay;
       }
       //  Player collision
-      if (dist(p1hboxx, p1hboxy, x, y) < ballSize/1.25 && Lives >= -1){
+      if (dist(p1hboxx, p1hboxy, x, y) < ballSize/1.25 && Lives >= 0){
         background(255,0,0);
         fill(255,255,255);
         text("DANGER!", width/2.1, height/18);
-        text("0:", width/1.98, height/12);
-        text(Lives, width/1.92, height/12);
+        text("0:", width/2.05, height/12);
+        text(Lives, width/1.99, height/12);
         Lives -= 1;
-      }else if (Lives <= -1){  //  Kill player when fully melted
+      }else if (Lives <= 0){  //  Kill player after running out of lives
         GameOver();
       }
     }
   }
   
-/*-------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
   
   //  BALL: MOVEMENT
   
@@ -89,7 +83,7 @@ class Ball {
     }
   }
   
-/*-------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
   
   //  BALL: DISPLAY
   
@@ -98,7 +92,7 @@ class Ball {
     ellipse(x, y, ballSize, ballSize);
   }
   
-/*-------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
   
   //  BALL: INITIAL VELOCITY
   
@@ -108,5 +102,3 @@ class Ball {
   }
   
 }  //  END OF BALLS
-
-/*-------------------------------------------------------------------------------------------------------------------*/

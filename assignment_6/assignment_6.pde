@@ -1,27 +1,28 @@
-/*---------------------------------------------------------------------------------------------------------------------
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
- * Name: TBD
- * Bouncy Bubbles  
- * based on code from Keith Peters. 
+ * Diver
+ * IMPORTANT: THE PROCESSING SOUND LIBRARY MUST BE INSTALLED FOR THIS PROGRAM TO FUNCTION!
  * 
- * Multiple-object collision.
- * Bouncy balls adapted from https://processing.org/examples/bouncybubbles.html
+ * Multiple-object collision bouncy balls adapted from https://processing.org/examples/bouncybubbles.html based on code from Keith Peters
  * Timer adapted from https://openprocessing.org/sketch/391986/
- * Sounds and music taken from freesound.org
+ * Music and sound effects adapted from https://freesound.org
  * 
  * Written by Charlie Trovini & Sam Kaplan
 
----------------------------------------------------------------------------------------------------------------------*/
+----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 //  INITIALIZE
 
 import processing.sound.*;
 
+//  GSV variable
+float pythagscale;
+
 //  Ball variables
 int numBalls = 18;
-//float spring = pythagscale/100;
 float gravity = 0.0;
 float friction = -0.9;
+float ballSize;  //  Defined in GSV
 Ball[] balls = new Ball[numBalls];
 
 //  Coin variables
@@ -71,21 +72,28 @@ SoundFile nextLevel;
 SoundFile song;
 SoundFile die;
 
-/*-------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 //  SETUP
 
 void setup() {
   
-  //  Suggested aspect ratio: 16:9
-  //  Built with 1280 x 720 as reference point
+  /*  Resolution info:
+      This program was built to scale properly to any 16:9 aspect ratio. Other aspect ratios will work but are not ideal. Test them at your own risk.
+      1280x720 was the resolution used during development as the reference point of the program. As such, I have set 1280x720 as the default size.
+      The resolution was increased to 1920x1080 during the project demo. This was done to produce a larger picture that would fill more screen space.
+      Listed below are resolutions I have personally tested the program at. I reccommend using these to demonstrate the program's scaling functionality:
+  size(512, 288);
+  size(640, 360);
+  size(1280, 720);
   size(1920, 1080);
-  noStroke();
+  size(2112, 1188);
+  */
+  size(1280, 720);
+  noStroke();  //  Outlines are icky
   
   //  Global Scaling Variable
-  //GSV();
-  float pythagscale = (sqrt((width*width + height*height)));
-  float ballSize = pythagscale/36.7;
+  GSV();
   
   //  Populates Bouncy Balls
   for (int i = 0; i < numBalls; i++) {
@@ -94,7 +102,7 @@ void setup() {
   
   //  Populates Coin Array
   for (int i = 0; i < coinNum; i++) {
-   coins[i] = new Coin(color(#ffeb16),random(width),random(height));
+    coins[i] = new Coin(color(#ffeb16),random(width),random(height));
   }
   
   //  Ball movement
@@ -157,7 +165,7 @@ void setup() {
   song = new SoundFile(this, "song.wav");
   die = new SoundFile(this, "die.wav");
   
-  //  coinNum reset check
+  //  coinNum Score reset check
   if (Score > 0){
     coinNum = 9;
   }else{
@@ -167,7 +175,7 @@ void setup() {
   
 }  //  END OF SETUP
 
-/*-------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 //  DRAW
 
@@ -188,16 +196,16 @@ void draw() {
   
   //  DRAW: Coins
   for (int i = 0; i < coinNum; i++) {
-  coins[i].displaycoin();
-  coins[i].destroycoin();
+    coins[i].displaycoin();
+    coins[i].destroycoin();
   }
   
   //  DRAW: Score
   if (Score % 10 == 0 && Score != 0){
     setup();
     Score += 91;
-    //The below line can be used to add lives every time you win
-   // Lives += 500;
+    //  The line below adds lives every time you win:
+    //Lives += 500;
     nextLevel.play();
   }
   
@@ -210,7 +218,7 @@ void draw() {
   timer = int(millis()/ 1000 - timerStart);     // counts up from the start time (0)
   countDown = int (countDownStart - timer);   // counts down from the start time (15)
   text("TIME", width/24, height/18);
-  text("", width/24, height/12);
+  text("00", width/26, height/12);
   text(":", width/17, height/12);
   text(countDown, width/16, height/12);
   
@@ -220,43 +228,43 @@ void draw() {
   
   //  Kill player if timer reaches 0
   if (countDown == -1){
+    Lives = -1;
     GameOver();
   }
+  
 }  //  END OF DRAW
 
-/*-------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/*  GLOBAL SCALING VARIABLE  — Non-functional as custom function
-    This variable is our scaling function, based on both width and height, it
-    is repeated throughout the code because it can't be declared as a global
-    variable because it uses width and height which are defined in setup
-*/
+/*  GLOBAL SCALING VARIABLE
+    This variable is our scaling function, based on both width and height, which are both defined in setup.
+    Because of this, it cannot be declared as a global variable and must be repeated throughout our code.
+    This custom function was written in an effort to circumvent that, but it unfortunately does not work.
+    Until now!*/
 
 void GSV() {
   
-  float pythagscale = (sqrt((width*width + height*height)));
-  float ballSize = pythagscale/36.7;
-  float spring = pythagscale/1400;
+  pythagscale = (sqrt((width*width + height*height)));
+  ballSize = pythagscale/36.7;
   
 }
 
-/*-------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 //  GAME OVER STATE
 
 void GameOver() {
   
-  //  GAME OVER text
-  //fill(255,255,255);
-  //textSize(width/24 + height/13.5);
-  //text("GAME OVER", width/3.55, height/2);
-  Score = 0;
-  Lives = 0;
-  Lives += 1500;
-  song.stop();
+  /*  GAME OVER text — looks a little jank and was thus removed
+  fill(255,255,255);
+  textSize(width/24 + height/13.5);
+  text("GAME OVER", width/3.55, height/2);*/
   die.play();
+  Score = 0;
+  Lives += 1501;
   setup();
+  song.stop();
   
 }  //  END OF GAME OVER STATE
 
-/*-------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
